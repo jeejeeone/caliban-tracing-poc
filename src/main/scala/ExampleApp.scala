@@ -31,7 +31,7 @@ object ExampleApp extends ZIOAppDefault {
       request => { ZIO.service[MockTracing] *> f(request) }
   }
 
-  val api = graphQL(
+  val api: GraphQL[MockTracing with Token] = graphQL(
     RootResolver(
       Queries(ZIO.service[Token].map(token => Response(token.value)))
     )
@@ -44,7 +44,7 @@ object ExampleApp extends ZIOAppDefault {
   val interceptor = ZLayer.makeSome[ServerRequest, Token with MockTracing](tokenInterceptor, mockTracingLayer)
 
   // How to use this?
-  val interceptor2 = ZLayer.makeSome[MockTracing with ServerRequest, Token](tokenInterceptor)
+  val interceptor2 = ZLayer.makeSome[ServerRequest with MockTracing, Token](tokenInterceptor)
 
   override def run: ZIO[Any, Throwable, Unit] =
     (for {
