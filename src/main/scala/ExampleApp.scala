@@ -53,7 +53,11 @@ object ExampleApp extends ZIOAppDefault {
     ZLayer.makeSome[ServerRequest, Token with MockTracing](tokenInterceptor, mockTracingLive)
 
   // How to use this?
-  val interceptor2: URLayer[ServerRequest with MockTracing, Token] =
+  val interceptor2: URLayer[ServerRequest, Token] =
+    ZLayer.makeSome[ServerRequest, Token](tokenInterceptor)
+
+  // Or this? More closely resembles actual project
+  val interceptorWithTraceStuff: URLayer[ServerRequest with MockTracing, Token] =
     ZLayer.makeSome[ServerRequest with MockTracing, Token](traceStuffInterceptor.flatMap(_ => tokenInterceptor))
 
   override def run: ZIO[Any, Throwable, Unit] =
