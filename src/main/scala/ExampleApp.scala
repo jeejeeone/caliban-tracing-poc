@@ -39,13 +39,14 @@ object ExampleApp extends ZIOAppDefault {
 
   val tokenInterceptor: URLayer[ServerRequest, Token] =
     ZLayer(ZIO.service[ServerRequest] *> ZIO.succeed(Token("token")))
-  val mockTracingLive: ULayer[MockTracing]            =
-    ZLayer.succeed(MockTracing())
 
-  val traceStuff = ZLayer {
+  val traceStuffInterceptor = ZLayer {
     // In actual project would use zio-telemetry unsafe api to set stuff
     ZIO.service[MockTracing].unit
   }
+
+  val mockTracingLive: ULayer[MockTracing] =
+    ZLayer.succeed(MockTracing())
 
   // Works
   val interceptor: URLayer[ServerRequest, Token with MockTracing] =
@@ -53,7 +54,7 @@ object ExampleApp extends ZIOAppDefault {
 
   // How to use this?
   val interceptor2: URLayer[ServerRequest with MockTracing, Token] =
-    ZLayer.makeSome[ServerRequest with MockTracing, Token](traceStuff.flatMap(_ => tokenInterceptor))
+    ZLayer.makeSome[ServerRequest with MockTracing, Token](traceStuffInterceptor.flatMap(_ => tokenInterceptor))
 
   override def run: ZIO[Any, Throwable, Unit] =
     (for {
