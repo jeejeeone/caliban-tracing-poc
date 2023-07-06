@@ -53,7 +53,7 @@ object ExampleApp extends ZIOAppDefault {
     ZLayer.makeSome[ServerRequest, Token with MockTracing](tokenInterceptor, mockTracingLive)
 
   // How to use this?
-  val interceptor2: URLayer[ServerRequest, Token] =
+  val interceptor2: URLayer[ServerRequest with MockTracing, Token] =
     ZLayer.makeSome[ServerRequest, Token](tokenInterceptor)
 
   // Or this? More closely resembles actual project
