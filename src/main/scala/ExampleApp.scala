@@ -8,6 +8,7 @@ import caliban.execution.ExecutionRequest
 import caliban.wrappers.Wrapper.ExecutionWrapper
 import sttp.tapir.model.ServerRequest
 
+// Represents zio.telemetry.opentelemetry.tracing.Tracing
 final case class MockTracing()
 
 object ExampleApp extends ZIOAppDefault {
@@ -24,6 +25,7 @@ object ExampleApp extends ZIOAppDefault {
   object customSchema extends GenericSchema[Token]
   import customSchema.auto._
 
+  // Simulate TracingWrapper.traced
   val mockTracingWrapper = new ExecutionWrapper[MockTracing] {
     def wrap[R <: MockTracing](
       f: ExecutionRequest => ZIO[R, Nothing, GraphQLResponse[CalibanError]]
@@ -52,7 +54,7 @@ object ExampleApp extends ZIOAppDefault {
   val interceptor: URLayer[ServerRequest, Token with MockTracing] =
     ZLayer.makeSome[ServerRequest, Token with MockTracing](tokenInterceptor, mockTracingLive)
 
-  // How to use this?
+  // How to use this in combination with mockTracingWrapper?
   val interceptor2: URLayer[ServerRequest, Token] =
     ZLayer.makeSome[ServerRequest, Token](tokenInterceptor)
 
