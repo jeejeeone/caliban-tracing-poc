@@ -44,7 +44,7 @@ object ExampleApp extends ZIOAppDefault {
   val interceptor = ZLayer.makeSome[ServerRequest, Token with MockTracing](tokenInterceptor, mockTracingLayer)
 
   // How to use this?
-  val interceptor2 = ZLayer.makeSome[ServerRequest, Token](tokenInterceptor)
+  val interceptor2 = ZLayer.makeSome[MockTracing with ServerRequest, Token](tokenInterceptor)
 
   override def run: ZIO[Any, Throwable, Unit] =
     (for {
